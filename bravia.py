@@ -5,22 +5,25 @@ import json
 # wol + SSDP
 import socket
 
+# New lines to have http debug information
+#http_logger = urllib2.HTTPHandler(debuglevel = 1)
+#opener = urllib2.build_opener(http_logger)
+#urllib2.install_opener(opener)
+# End of new lines related to http debug
+
 
 ###########################################################
 #
 #	GLOBAL VAR & DEFINITIONS
 #
 ###########################################################
-SONYIP = "192.168.1.72"
-#CLIENTID = "bunk3r:"+str(uuid.uuid4())
-#CLIENTID = "bunk3r:a484c257-c10e-46b8-8ab2-411dcdcbdeea"
-#NICKNAME = "bunk3r (braviapy)"
+SONYIP = "192.168.1.152"
 CLIENTID = 'TVSideView:eb1214c4-321d-47ab-948d-9b9ebb36354e'
 NICKNAME = 'Nexus 7 (TV SideView)'
 
 
-# B0:10:41:72:C6:83
-macaddr = "B0:10:41:72:C6:83"
+# d8:5d:e2:3b:d5:c1
+macaddr = "D8:5D:E2:3B:D5:C1"
 
 _AUTHORIZATION = json.dumps(
 {	"method":"actRegister",
@@ -520,6 +523,7 @@ def main():
 	cookie = bravia_auth(SONYIP, "80", "sony/accessControl", _AUTHORIZATION, None );
 	# send PIN if not cookie
 	if not cookie:
+		pin = input('Pincode: ')
 		print "Sending PIN ", str(pin)
 		cookie = bravia_auth(SONYIP, "80", "sony/accessControl", _AUTHORIZATION, pin );
 		# exit if not cookie again (NO AUTH)
