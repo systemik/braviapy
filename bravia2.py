@@ -412,23 +412,40 @@ def bravia_req_json( ip, port, url, params, cookie ):
 #	SEND IRCC REQUEST via HTTP (cookie required)
 #
 ###########################################################
+
 def bravia_req_ircc( ip, port, url, params, cookie ):
-	req = urllib2.Request('http://'+ip+':'+port+'/'+url, "<?xml version=\"1.0\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\" s:encodingStyle=\"http://schemas.xmlsoap.org/soap/encoding/\"><s:Body><u:X_SendIRCC xmlns:u=\"urn:schemas-sony-com:service:IRCC:1\"><IRCCCode>"+params+"</IRCCCode></u:X_SendIRCC></s:Body></s:Envelope>")
-	req.add_header('SOAPACTION', 'urn:schemas-sony-com:service:IRCC:1#X_SendIRCC')
-	req.add_header('Cookie', cookie)
+	
+	soap = 	'<?xml version="1.0"?>'\
+		'<s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">'\
+		'<s:Body>'\
+            	'<u:X_SendIRCC xmlns:u="urn:schemas-sony-com:service:IRCC:1"><IRCCCode>AAAAAQAAAAEAAAASAw==</IRCCCode>'\
+		'</u:X_SendIRCC>'\
+		'</s:Body>'\
+		'</s:Envelope>'	
+	host = ip
+	headers = {
+		'Host':host,
+		'Accept':"*/*",
+		'Content-length':len(soap),
+		'Content-Type':'text/xml; charset="utf-8"',
+		'Cookie':cookie,
+		'SOAPACTION':'"urn:schemas-sony-com:service:IRCC:1#X_SendIRCC"'
+	}
+	method = "POST"
+	req = urllib2.Request('http://'+ip+'/sony/IRCC', data=soap, headers=headers)
+	req.get_method = lambda: method
 	
 	try:
 		response = urllib2.urlopen(req)
 	except urllib2.HTTPError, e:
-		print "[W] HTTPError: " + str(e.code)
-		
+		print "[W] HTTPError: " + str(e.code) + str(e.read)
+
 	except urllib2.URLError, e:
 		print "[W] URLError: " + str(e.reason)
 		#sys.exit(1)
 	else:
 		tree = response.read()
 		return tree
-
 
 	
 ###########################################################
